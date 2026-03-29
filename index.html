@@ -24,7 +24,6 @@
       gap: 16px;
     }
 
-    /* TITRE */
     .title {
       text-align: center;
       font-size: 1rem;
@@ -37,7 +36,6 @@
       box-shadow: 0 2px 8px rgba(0,0,0,.08);
     }
 
-    /* POMPES */
     .card {
       background: #fff;
       border-radius: 18px;
@@ -53,6 +51,54 @@
       margin-bottom: 12px;
     }
 
+    /* BOUTON GÉOLOCALISATION */
+    .btn-geo {
+      width: 100%;
+      background: linear-gradient(135deg, #ff7043, #e64a19);
+      color: #fff;
+      font-size: .82rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      box-shadow: 0 3px 10px rgba(230,74,25,.3);
+      transition: opacity .2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-geo:hover { opacity: .9; }
+    .btn-geo:disabled { background: #ccc; box-shadow: none; cursor: default; }
+
+    .geo-status {
+      font-size: .68rem;
+      text-align: center;
+      min-height: 16px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .geo-status.loading { color: #ff7043; }
+    .geo-status.success { color: #4caf50; }
+    .geo-status.error   { color: #e53935; }
+
+    /* STATION AFFICHÉE */
+    .station-info {
+      font-size: .68rem;
+      color: #666;
+      text-align: center;
+      background: #f5faff;
+      border-radius: 10px;
+      padding: 6px 10px;
+      margin-bottom: 10px;
+      display: none;
+    }
+    .station-info.visible { display: block; }
+
+    /* POMPES */
     .pumps {
       display: flex;
       gap: 8px;
@@ -75,11 +121,7 @@
       position: relative;
       -webkit-tap-highlight-color: transparent;
     }
-    .pump-card.selected {
-      border-color: #3a9bdc;
-      transform: scale(1.04);
-      background: #edf6ff;
-    }
+    .pump-card.selected { border-color: #3a9bdc; transform: scale(1.04); background: #edf6ff; }
     .pump-card.selected::after {
       content: '✔';
       position: absolute;
@@ -94,8 +136,7 @@
     }
 
     .pump-icon {
-      width: 48px;
-      height: 52px;
+      width: 48px; height: 52px;
       border-radius: 10px;
       display: flex;
       flex-direction: column;
@@ -110,11 +151,7 @@
     .pump-e95  { background: #4caf50; }
     .pump-dies { background: #3a9bdc; }
 
-    .pump-label {
-      font-size: .68rem;
-      font-weight: 700;
-      color: #444;
-    }
+    .pump-label { font-size: .68rem; font-weight: 700; color: #444; }
 
     .pump-price-wrap {
       width: 100%;
@@ -123,27 +160,23 @@
       align-items: center;
       gap: 2px;
     }
-    .pump-price-wrap label {
-      font-size: .58rem;
-      color: #888;
-      font-weight: 600;
-    }
+    .pump-price-wrap label { font-size: .58rem; color: #888; font-weight: 600; }
     .pump-price-wrap input {
       width: 100%;
       text-align: center;
       border: 2px solid #dde6f0;
       border-radius: 8px;
       padding: 5px 2px;
-      font-size: .82rem;
+      font-size: 16px;
       font-weight: 700;
       color: #3a5a8c;
       outline: none;
       background: #fff;
       transition: border-color .2s;
-      /* Empêche le zoom iOS au focus */
-      font-size: 16px;
     }
     .pump-price-wrap input:focus { border-color: #3a9bdc; }
+    /* Indicateur de mise à jour auto */
+    .pump-price-wrap input.auto-filled { border-color: #4caf50; background: #f0fff4; }
 
     /* TRAJET */
     .road-visual {
@@ -153,17 +186,12 @@
       margin-bottom: 14px;
     }
     .road-line {
-      flex: 1;
-      height: 6px;
+      flex: 1; height: 6px;
       background: linear-gradient(90deg, #b0d4f0, #3a9bdc);
       border-radius: 3px;
       position: relative;
     }
-    .car-emoji {
-      position: absolute;
-      top: -10px; left: 40%;
-      font-size: 1.1rem;
-    }
+    .car-emoji { position: absolute; top: -10px; left: 40%; font-size: 1.1rem; }
 
     .input-row {
       display: flex;
@@ -171,18 +199,13 @@
       gap: 8px;
       margin-bottom: 10px;
     }
-    .input-row label {
-      font-size: .78rem;
-      font-weight: 600;
-      color: #555;
-      min-width: 100px;
-    }
+    .input-row label { font-size: .78rem; font-weight: 600; color: #555; min-width: 100px; }
     .input-row input {
       flex: 1;
       border: 2px solid #dde6f0;
       border-radius: 12px;
       padding: 8px 10px;
-      font-size: 16px; /* évite zoom iOS */
+      font-size: 16px;
       font-weight: 700;
       color: #3a5a8c;
       outline: none;
@@ -190,13 +213,7 @@
       transition: border-color .2s;
     }
     .input-row input:focus { border-color: #3a9bdc; }
-    .input-row span {
-      font-size: .75rem;
-      color: #888;
-      font-weight: 600;
-      min-width: 52px;
-      text-align: right;
-    }
+    .input-row span { font-size: .75rem; color: #888; font-weight: 600; min-width: 52px; text-align: right; }
 
     /* RÉSULTAT */
     .result-card {
@@ -206,13 +223,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,.08);
       text-align: center;
     }
-    .result-card h2 {
-      font-size: .72rem;
-      font-weight: 700;
-      color: #3a5a8c;
-      letter-spacing: .06em;
-      margin-bottom: 10px;
-    }
+    .result-card h2 { font-size: .72rem; font-weight: 700; color: #3a5a8c; letter-spacing: .06em; margin-bottom: 10px; }
     .result-value {
       background: #4caf50;
       color: #fff;
@@ -225,41 +236,37 @@
       box-shadow: 0 4px 14px rgba(76,175,80,.3);
     }
     .result-value.empty { background: #ccc; }
-    .result-detail {
-      margin-top: 8px;
-      font-size: .7rem;
-      color: #888;
-      line-height: 1.5;
-    }
+    .result-detail { margin-top: 8px; font-size: .7rem; color: #888; line-height: 1.5; }
 
-    /* ERREUR */
-    .error-msg {
-      color: #e53935;
-      font-size: .78rem;
-      font-weight: 600;
-      text-align: center;
-      min-height: 16px;
-    }
+    .error-msg { color: #e53935; font-size: .78rem; font-weight: 600; text-align: center; min-height: 16px; }
+
+    /* DERNIÈRE MAJ PRIX */
+    .last-update { font-size: .62rem; color: #aaa; text-align: center; margin-top: -8px; }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- TITRE -->
   <div class="title">⛽ CALCUL COÛT DU TRAJET</div>
 
   <!-- POMPES -->
   <div class="card">
     <h2>CHOISIS TON CARBURANT</h2>
-    <div class="pumps">
 
+    <!-- Bouton géolocalisation -->
+    <button class="btn-geo" id="btn-geo" onclick="fetchPrices()">
+      📍 Récupérer les prix près de moi
+    </button>
+    <div class="geo-status" id="geo-status"></div>
+    <div class="station-info" id="station-info"></div>
+
+    <div class="pumps">
       <div class="pump-card" id="card-e98" onclick="selectFuel('e98')">
         <div class="pump-icon pump-e98">⛽<br>E98</div>
         <div class="pump-label">E98</div>
         <div class="pump-price-wrap">
           <label>Prix €/L</label>
-          <input type="number" id="price-e98" min="0" step="0.001"
-                 placeholder="1.799"
+          <input type="number" id="price-e98" min="0" step="0.001" placeholder="1.799"
                  onclick="event.stopPropagation()"
                  oninput="savePrice('e98'); calculate()" />
         </div>
@@ -270,8 +277,7 @@
         <div class="pump-label">E95</div>
         <div class="pump-price-wrap">
           <label>Prix €/L</label>
-          <input type="number" id="price-e95" min="0" step="0.001"
-                 placeholder="1.749"
+          <input type="number" id="price-e95" min="0" step="0.001" placeholder="1.749"
                  onclick="event.stopPropagation()"
                  oninput="savePrice('e95'); calculate()" />
         </div>
@@ -282,14 +288,14 @@
         <div class="pump-label">Diesel</div>
         <div class="pump-price-wrap">
           <label>Prix €/L</label>
-          <input type="number" id="price-dies" min="0" step="0.001"
-                 placeholder="1.699"
+          <input type="number" id="price-dies" min="0" step="0.001" placeholder="1.699"
                  onclick="event.stopPropagation()"
                  oninput="savePrice('dies'); calculate()" />
         </div>
       </div>
-
     </div>
+
+    <div class="last-update" id="last-update"></div>
   </div>
 
   <!-- TRAJET -->
@@ -312,7 +318,6 @@
     </div>
   </div>
 
-  <!-- ERREUR -->
   <div class="error-msg" id="error-msg"></div>
 
   <!-- RÉSULTAT -->
@@ -325,30 +330,29 @@
 </div>
 
 <script>
-  // Carburant sélectionné par défaut
   let selectedFuel = 'dies';
 
-  // Init : restaurer les prix + sélection sauvegardés
+  const API_URL = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-des-carburants-en-france-flux-instantane-v2/records";
+
   window.addEventListener('DOMContentLoaded', () => {
     ['e98','e95','dies'].forEach(f => {
       const saved = localStorage.getItem('price_' + f);
       if (saved) document.getElementById('price-' + f).value = saved;
     });
-    const savedFuel = localStorage.getItem('selected_fuel');
-    if (savedFuel) {
-      selectedFuel = savedFuel;
-    }
-    // Appliquer la classe selected au bon carburant
+    const savedFuel = localStorage.getItem('selected_fuel') || 'dies';
+    selectedFuel = savedFuel;
     document.getElementById('card-' + selectedFuel).classList.add('selected');
+
+    const lastUpdate = localStorage.getItem('prices_last_update');
+    if (lastUpdate) {
+      document.getElementById('last-update').textContent = '🕐 Prix mis à jour le ' + lastUpdate;
+    }
     calculate();
   });
 
   function selectFuel(fuel) {
-    // Retirer la sélection de toutes les pompes
     document.querySelectorAll('.pump-card').forEach(c => c.classList.remove('selected'));
-    // Appliquer la sélection à la pompe choisie
     document.getElementById('card-' + fuel).classList.add('selected');
-    // Mettre à jour la variable ET la sauvegarder AVANT de calculer
     selectedFuel = fuel;
     localStorage.setItem('selected_fuel', fuel);
     calculate();
@@ -357,6 +361,100 @@
   function savePrice(fuel) {
     const val = document.getElementById('price-' + fuel).value;
     localStorage.setItem('price_' + fuel, val);
+    // Retirer l'indicateur vert si l'utilisateur modifie manuellement
+    document.getElementById('price-' + fuel).classList.remove('auto-filled');
+  }
+
+  // ── RÉCUPÉRATION DES PRIX VIA API GOUVERNEMENT ──
+  function fetchPrices() {
+    const btn    = document.getElementById('btn-geo');
+    const status = document.getElementById('geo-status');
+    const info   = document.getElementById('station-info');
+
+    if (!navigator.geolocation) {
+      status.textContent = '❌ Géolocalisation non supportée sur cet appareil.';
+      status.className = 'geo-status error';
+      return;
+    }
+
+    btn.disabled = true;
+    status.textContent = '📡 Localisation en cours...';
+    status.className = 'geo-status loading';
+    info.classList.remove('visible');
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+
+        status.textContent = '🔄 Recherche des stations autour de vous...';
+
+        try {
+          // Recherche des 10 stations les plus proches dans un rayon de 15 km
+          const query = `distance(geom,geom'POINT(${lon} ${lat})',15km)`;
+          const url   = `${API_URL}?where=${encodeURIComponent(query)}&limit=10&order_by=gazole_prix ASC`;
+          const resp  = await fetch(url);
+          const data  = await resp.json();
+
+          if (!data.results || data.results.length === 0) {
+            status.textContent = '⚠️ Aucune station trouvée dans un rayon de 15 km.';
+            status.className = 'geo-status error';
+            btn.disabled = false;
+            return;
+          }
+
+          // Chercher la station avec le max de carburants disponibles
+          let best = null;
+          for (const s of data.results) {
+            if (s.sp98_prix && s.sp95_prix && s.gazole_prix) { best = s; break; }
+          }
+          if (!best) best = data.results[0];
+
+          // Remplir les champs
+          const map = { 'e98': 'sp98_prix', 'e95': 'sp95_prix', 'dies': 'gazole_prix' };
+          let filled = 0;
+          for (const [fuel, field] of Object.entries(map)) {
+            if (best[field]) {
+              const input = document.getElementById('price-' + fuel);
+              input.value = parseFloat(best[field]).toFixed(3);
+              input.classList.add('auto-filled');
+              localStorage.setItem('price_' + fuel, input.value);
+              filled++;
+            }
+          }
+
+          // Afficher le nom de la station
+          const nom     = best.nom || 'Station inconnue';
+          const ville   = best.ville || '';
+          const adresse = best.adresse || '';
+          info.textContent = '📍 ' + nom + ' — ' + adresse + ', ' + ville;
+          info.classList.add('visible');
+
+          // Sauvegarder la date de mise à jour
+          const now = new Date().toLocaleDateString('fr-FR', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+          });
+          localStorage.setItem('prices_last_update', now);
+          document.getElementById('last-update').textContent = '🕐 Prix mis à jour le ' + now;
+
+          status.textContent = '✅ ' + filled + ' prix récupérés automatiquement !';
+          status.className = 'geo-status success';
+          calculate();
+
+        } catch (e) {
+          status.textContent = '❌ Erreur lors de la récupération des prix. Vérifiez votre connexion.';
+          status.className = 'geo-status error';
+        }
+        btn.disabled = false;
+      },
+      (err) => {
+        status.textContent = '❌ Localisation refusée ou indisponible.';
+        status.className = 'geo-status error';
+        btn.disabled = false;
+      },
+      { timeout: 10000, enableHighAccuracy: false }
+    );
   }
 
   function calculate() {
