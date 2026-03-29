@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Calcul Coût Trajet</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(160deg, #dff0ff 0%, #f0f8ff 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px 14px 40px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* TITRE */
+    .title {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: .06em;
+      color: #3a5a8c;
+      background: #fff;
+      border-radius: 16px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    /* POMPES */
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 16px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .card h2 {
+      font-size: .72rem;
+      font-weight: 700;
+      color: #3a5a8c;
+      letter-spacing: .06em;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .pumps {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .pump-card {
+      flex: 1;
+      background: #f5faff;
+      border-radius: 14px;
+      padding: 10px 6px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      border: 3px solid transparent;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+      transition: border-color .2s, transform .15s;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pump-card.selected {
+      border-color: #3a9bdc;
+      transform: scale(1.04);
+      background: #edf6ff;
+    }
+    .pump-card.selected::after {
+      content: '✔';
+      position: absolute;
+      top: 5px; right: 6px;
+      font-size: .65rem;
+      color: #fff;
+      background: #3a9bdc;
+      border-radius: 50%;
+      width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900;
+    }
+
+    .pump-icon {
+      width: 48px;
+      height: 52px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: .85rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .pump-e98  { background: #f5b800; }
+    .pump-e95  { background: #4caf50; }
+    .pump-dies { background: #3a9bdc; }
+
+    .pump-label {
+      font-size: .68rem;
+      font-weight: 700;
+      color: #444;
+    }
+
+    .pump-price-wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .pump-price-wrap label {
+      font-size: .58rem;
+      color: #888;
+      font-weight: 600;
+    }
+    .pump-price-wrap input {
+      width: 100%;
+      text-align: center;
+      border: 2px solid #dde6f0;
+      border-radius: 8px;
+      padding: 5px 2px;
+      font-size: .82rem;
+      font-weight: 700;
+      color: #3a5a8c;
+      outline: none;
+      background: #fff;
+      transition: border-color .2s;
+      /* Empêche le zoom iOS au focus */
+      font-size: 16px;
+    }
+    .pump-price-wrap input:focus { border-color: #3a9bdc; }
+
+    /* TRAJET */
+    .road-visual {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .road-line {
+      flex: 1;
+      height: 6px;
+      background: linear-gradient(90deg, #b0d4f0, #3a9bdc);
+      border-radius: 3px;
+      position: relative;
+    }
+    .car-emoji {
+      position: absolute;
+      top: -10px; left: 40%;
+      font-size: 1.1rem;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .input-row label {
+      font-size: .78rem;
+      font-weight: 600;
+      color: #555;
+      min-width: 100px;
+    }
+    .input-row input {
+      flex: 1;
+      border: 2px solid #dde6f0;
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-size: 16px; /* évite zoom iOS */
+      font-weight: 700;
+      color: #3a5a8c;
+      outline: none;
+      background: #f5faff;
+      transition: border-color .2s;
+    }
+    .input-row input:focus { border-color: #3a9bdc; }
+    .input-row span {
+      font-size: .75rem;
+      color: #888;
+      font-weight: 600;
+      min-width: 52px;
+      text-align: right;
+    }
+
+    /* RÉSULTAT */
+    .result-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      text-align: center;
+    }
+    .result-card h2 {
+      font-size: .72rem;
+      font-weight: 700;
+      color: #3a5a8c;
+      letter-spacing: .06em;
+      margin-bottom: 10px;
+    }
+    .result-value {
+      background: #4caf50;
+      color: #fff;
+      font-size: 2rem;
+      font-weight: 900;
+      border-radius: 14px;
+      padding: 14px 20px;
+      display: inline-block;
+      min-width: 160px;
+      box-shadow: 0 4px 14px rgba(76,175,80,.3);
+    }
+    .result-value.empty { background: #ccc; }
+    .result-detail {
+      margin-top: 8px;
+      font-size: .7rem;
+      color: #888;
+      line-height: 1.5;
+    }
+
+    /* ERREUR */
+    .error-msg {
+      color: #e53935;
+      font-size: .78rem;
+      font-weight: 600;
+      text-align: center;
+      min-height: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TITRE -->
+  <div class="title">⛽ CALCUL COÛT DU TRAJET</div>
+
+  <!-- POMPES -->
+  <div class="card">
+    <h2>CHOISIS TON CARBURANT</h2>
+    <div class="pumps">
+
+      <div class="pump-card" id="card-e98" onclick="selectFuel('e98')">
+        <div class="pump-icon pump-e98">⛽<br>E98</div>
+        <div class="pump-label">E98</div>
+        <div class="pump-price-wrap">
+          <label>Prix €/L</label>
+          <input type="number" id="price-e98" min="0" step="0.001"
+                 placeholder="1.799"
+                 onclick="event.stopPropagation()"
+                 oninput="savePrice('e98'); calculate()" />
+        </div>
+      </div>
+
+      <div class="pump-card" id="card-e95" onclick="selectFuel('e95')">
+        <div class="pump-icon pump-e95">⛽<br>E95</div>
+        <div class="pump-label">E95</div>
+        <div class="pump-price-wrap">
+          <label>Prix €/L</label>
+          <input type="number" id="price-e95" min="0" step="0.001"
+                 placeholder="1.749"
+                 onclick="event.stopPropagation()"
+                 oninput="savePrice('e95'); calculate()" />
+        </div>
+      </div>
+
+      <div class="pump-card" id="card-dies" onclick="selectFuel('dies')">
+        <div class="pump-icon pump-dies">⛽<br>DSL</div>
+        <div class="pump-label">Diesel</div>
+        <div class="pump-price-wrap">
+          <label>Prix €/L</label>
+          <input type="number" id="price-dies" min="0" step="0.001"
+                 placeholder="1.699"
+                 onclick="event.stopPropagation()"
+                 oninput="savePrice('dies'); calculate()" />
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TRAJET -->
+  <div class="card">
+    <h2>🗺️ TON TRAJET</h2>
+    <div class="road-visual">
+      <span>🚩</span>
+      <div class="road-line"><span class="car-emoji">🚗</span></div>
+      <span>🏁</span>
+    </div>
+    <div class="input-row">
+      <label>Distance</label>
+      <input type="number" id="distance" min="0" placeholder="" oninput="calculate()" />
+      <span>km</span>
+    </div>
+    <div class="input-row">
+      <label>Consommation</label>
+      <input type="number" id="conso" min="0" step="0.1" placeholder="" oninput="calculate()" />
+      <span>L/100 km</span>
+    </div>
+  </div>
+
+  <!-- ERREUR -->
+  <div class="error-msg" id="error-msg"></div>
+
+  <!-- RÉSULTAT -->
+  <div class="result-card">
+    <h2>💰 COÛT DU TRAJET</h2>
+    <div class="result-value empty" id="result-value">-- €</div>
+    <div class="result-detail" id="result-detail"></div>
+  </div>
+
+</div>
+
+<script>
+  // Carburant sélectionné par défaut
+  let selectedFuel = 'dies';
+
+  // Init : restaurer les prix + sélection sauvegardés
+  window.addEventListener('DOMContentLoaded', () => {
+    ['e98','e95','dies'].forEach(f => {
+      const saved = localStorage.getItem('price_' + f);
+      if (saved) document.getElementById('price-' + f).value = saved;
+    });
+    const savedFuel = localStorage.getItem('selected_fuel');
+    if (savedFuel) {
+      selectedFuel = savedFuel;
+    }
+    // Appliquer la classe selected au bon carburant
+    document.getElementById('card-' + selectedFuel).classList.add('selected');
+    calculate();
+  });
+
+  function selectFuel(fuel) {
+    // Retirer la sélection de toutes les pompes
+    document.querySelectorAll('.pump-card').forEach(c => c.classList.remove('selected'));
+    // Appliquer la sélection à la pompe choisie
+    document.getElementById('card-' + fuel).classList.add('selected');
+    // Mettre à jour la variable ET la sauvegarder AVANT de calculer
+    selectedFuel = fuel;
+    localStorage.setItem('selected_fuel', fuel);
+    calculate();
+  }
+
+  function savePrice(fuel) {
+    const val = document.getElementById('price-' + fuel).value;
+    localStorage.setItem('price_' + fuel, val);
+  }
+
+  function calculate() {
+    const errEl = document.getElementById('error-msg');
+    const resEl = document.getElementById('result-value');
+    const detEl = document.getElementById('result-detail');
+
+    const price = parseFloat(document.getElementById('price-' + selectedFuel).value);
+    const dist  = parseFloat(document.getElementById('distance').value);
+    const conso = parseFloat(document.getElementById('conso').value);
+
+    errEl.textContent = '';
+
+    if (isNaN(price) || isNaN(dist) || isNaN(conso)) {
+      resEl.textContent = '-- €';
+      resEl.className   = 'result-value empty';
+      detEl.textContent = '';
+      return;
+    }
+    if (price <= 0 || dist <= 0 || conso <= 0) {
+      errEl.textContent = '⚠️ Les valeurs doivent être supérieures à 0.';
+      resEl.textContent = '-- €';
+      resEl.className   = 'result-value empty';
+      detEl.textContent = '';
+      return;
+    }
+
+    const litres = (dist * conso) / 100;
+    const cost   = litres * price;
+    const fuelNames = { e98: 'E98', e95: 'E95', dies: 'Diesel' };
+
+    resEl.textContent = cost.toFixed(2).replace('.', ',') + ' €';
+    resEl.className   = 'result-value';
+    detEl.textContent =
+      dist + ' km × ' + conso + ' L/100km = ' +
+      litres.toFixed(2) + ' L × ' + price.toFixed(3) + ' €/L (' + fuelNames[selectedFuel] + ')';
+  }
+</script>
+</body>
+</html>
