@@ -2,485 +2,520 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Calcul Coût Trajet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calcul coût du trajet</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(160deg, #dff0ff 0%, #f0f8ff 100%);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      padding: 20px 14px 40px;
+    :root{
+      --bg:#eaf4ff;
+      --card:#ffffff;
+      --text:#355070;
+      --muted:#6b7a90;
+      --accent:#ff5a1f;
+      --accent2:#2f80ed;
+      --success:#2e9e44;
+      --warning:#d9822b;
+      --error:#d64545;
+      --shadow:0 8px 24px rgba(53,80,112,.12);
+      --radius:22px;
     }
-
-    .app { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 16px; }
-
-    .title {
-      text-align: center;
-      font-size: 1rem;
-      font-weight: 800;
-      letter-spacing: .06em;
-      color: #3a5a8c;
-      background: #fff;
-      border-radius: 16px;
-      padding: 12px 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      padding:20px;
     }
-
-    .card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 16px 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    .container{
+      max-width:760px;
+      margin:0 auto;
     }
-    .card h2 {
-      font-size: .72rem;
-      font-weight: 700;
-      color: #3a5a8c;
-      letter-spacing: .06em;
-      text-align: center;
-      margin-bottom: 12px;
+    .title-card,.main-card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
     }
-
-    /* BOUTON GÉOLOCALISATION */
-    .btn-geo {
-      width: 100%;
-      background: linear-gradient(135deg, #ff7043, #e64a19);
-      color: #fff;
-      font-size: .82rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 12px;
-      padding: 10px 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 10px;
-      box-shadow: 0 3px 10px rgba(230,74,25,.3);
-      transition: opacity .2s;
-      -webkit-tap-highlight-color: transparent;
+    .title-card{
+      padding:20px;
+      text-align:center;
+      font-weight:700;
+      letter-spacing:.5px;
+      margin-bottom:18px;
+      font-size:28px;
     }
-    .btn-geo:hover { opacity: .9; }
-    .btn-geo:disabled { background: #ccc; box-shadow: none; cursor: default; opacity: 1; }
-
-    .geo-status {
-      font-size: .68rem;
-      text-align: center;
-      min-height: 16px;
-      margin-bottom: 6px;
-      font-weight: 600;
+    .main-card{
+      padding:24px;
     }
-    .geo-status.loading { color: #ff7043; }
-    .geo-status.success { color: #4caf50; }
-    .geo-status.error   { color: #e53935; }
-
-    /* INFOS STATION */
-    .station-info {
-      font-size: .68rem;
-      color: #555;
-      text-align: center;
-      background: #f0fff4;
-      border: 1px solid #c8e6c9;
-      border-radius: 10px;
-      padding: 7px 10px;
-      margin-bottom: 10px;
-      display: none;
-      line-height: 1.5;
+    h2{
+      margin:0 0 16px 0;
+      text-align:center;
+      font-size:22px;
     }
-    .station-info.visible { display: block; }
-    .station-info strong { color: #2e7d32; }
-
-    /* POMPES */
-    .pumps { display: flex; gap: 8px; justify-content: center; }
-
-    .pump-card {
-      flex: 1;
-      background: #f5faff;
-      border-radius: 14px;
-      padding: 10px 6px 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
-      border: 3px solid transparent;
-      box-shadow: 0 1px 4px rgba(0,0,0,.07);
-      transition: border-color .2s, transform .15s;
-      position: relative;
-      -webkit-tap-highlight-color: transparent;
+    .btn{
+      width:100%;
+      border:none;
+      border-radius:16px;
+      padding:16px 18px;
+      font-size:18px;
+      font-weight:700;
+      cursor:pointer;
+      color:#fff;
+      background:linear-gradient(90deg,#ff6a3d,#f04d13);
+      box-shadow:0 8px 18px rgba(240,77,19,.25);
     }
-    .pump-card.selected { border-color: #3a9bdc; transform: scale(1.04); background: #edf6ff; }
-    .pump-card.selected::after {
-      content: '✔';
-      position: absolute;
-      top: 5px; right: 6px;
-      font-size: .65rem;
-      color: #fff;
-      background: #3a9bdc;
-      border-radius: 50%;
-      width: 16px; height: 16px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 900;
+    .btn:disabled{opacity:.7;cursor:wait}
+    .status{
+      margin:14px 0 10px;
+      padding:12px 14px;
+      border-radius:14px;
+      font-size:15px;
+      line-height:1.4;
+      text-align:center;
+      display:none;
     }
-
-    .pump-icon {
-      width: 48px; height: 52px;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: .85rem;
-      font-weight: 900;
-      color: #fff;
-      line-height: 1.2;
+    .status.show{display:block}
+    .status.info{background:#eef6ff;color:#2d5b8a}
+    .status.success{background:#ecf9ef;color:var(--success)}
+    .status.warning{background:#fff6ea;color:var(--warning)}
+    .status.error{background:#fff0f0;color:var(--error)}
+    .location-line{
+      margin:12px 0 16px;
+      color:var(--muted);
+      text-align:center;
+      font-size:14px;
     }
-    .pump-e98  { background: #f5b800; }
-    .pump-e95  { background: #4caf50; }
-    .pump-dies { background: #3a9bdc; }
-
-    .pump-label { font-size: .68rem; font-weight: 700; color: #444; }
-
-    .pump-price-wrap {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
+    .manual-box{
+      margin:12px 0 16px;
+      padding:14px;
+      border:1px dashed #c8d6e8;
+      border-radius:16px;
+      background:#f8fbff;
+      display:none;
     }
-    .pump-price-wrap label { font-size: .58rem; color: #888; font-weight: 600; }
-    .pump-price-wrap input {
-      width: 100%;
-      text-align: center;
-      border: 2px solid #dde6f0;
-      border-radius: 8px;
-      padding: 5px 2px;
-      font-size: 16px;
-      font-weight: 700;
-      color: #3a5a8c;
-      outline: none;
-      background: #fff;
-      transition: border-color .2s, background .2s;
+    .manual-box.show{display:block}
+    .manual-box h3{
+      margin:0 0 10px;
+      font-size:16px;
+      text-align:center;
     }
-    .pump-price-wrap input:focus { border-color: #3a9bdc; }
-    .pump-price-wrap input.auto-filled { border-color: #4caf50; background: #f0fff4; }
-    /* Badge "non dispo" */
-    .pump-price-wrap .unavailable {
-      font-size: .58rem;
-      color: #bbb;
-      font-style: italic;
+    .manual-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
     }
-
-    /* TRAJET */
-    .road-visual {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    .manual-row input{
+      flex:1 1 220px;
+      padding:12px 14px;
+      border:1px solid #cfd9e6;
+      border-radius:12px;
+      font-size:15px;
     }
-    .road-line {
-      flex: 1; height: 6px;
-      background: linear-gradient(90deg, #b0d4f0, #3a9bdc);
-      border-radius: 3px;
-      position: relative;
+    .manual-row button{
+      flex:0 0 auto;
+      padding:12px 16px;
+      border:none;
+      border-radius:12px;
+      background:var(--accent2);
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
     }
-    .car-emoji { position: absolute; top: -10px; left: 40%; font-size: 1.1rem; }
-
-    .input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-    .input-row label { font-size: .78rem; font-weight: 600; color: #555; min-width: 100px; }
-    .input-row input {
-      flex: 1;
-      border: 2px solid #dde6f0;
-      border-radius: 12px;
-      padding: 8px 10px;
-      font-size: 16px;
-      font-weight: 700;
-      color: #3a5a8c;
-      outline: none;
-      background: #f5faff;
-      transition: border-color .2s;
+    .fuel-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-top:14px;
     }
-    .input-row input:focus { border-color: #3a9bdc; }
-    .input-row span { font-size: .75rem; color: #888; font-weight: 600; min-width: 52px; text-align: right; }
-
-    /* RÉSULTAT */
-    .result-card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 18px 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.08);
-      text-align: center;
+    .fuel-card{
+      background:#f8fbff;
+      border:2px solid transparent;
+      border-radius:18px;
+      padding:16px 12px;
+      text-align:center;
+      position:relative;
+      min-height:190px;
+      cursor:pointer;
     }
-    .result-card h2 { font-size: .72rem; font-weight: 700; color: #3a5a8c; letter-spacing: .06em; margin-bottom: 10px; }
-    .result-value {
-      background: #4caf50;
-      color: #fff;
-      font-size: 2rem;
-      font-weight: 900;
-      border-radius: 14px;
-      padding: 14px 20px;
-      display: inline-block;
-      min-width: 160px;
-      box-shadow: 0 4px 14px rgba(76,175,80,.3);
+    .fuel-card.selected{
+      border-color:#4aa3ff;
+      box-shadow:0 0 0 3px rgba(74,163,255,.12);
     }
-    .result-value.empty { background: #ccc; }
-    .result-detail { margin-top: 8px; font-size: .7rem; color: #888; line-height: 1.5; }
-
-    .error-msg { color: #e53935; font-size: .78rem; font-weight: 600; text-align: center; min-height: 16px; }
-    .last-update { font-size: .62rem; color: #aaa; text-align: center; margin-top: 8px; }
+    .check{
+      position:absolute;
+      top:10px;
+      right:10px;
+      width:22px;
+      height:22px;
+      border-radius:50%;
+      background:#4aa3ff;
+      color:#fff;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      font-size:13px;
+      font-weight:700;
+    }
+    .fuel-card.selected .check{display:flex}
+    .fuel-icon{
+      width:62px;
+      height:62px;
+      margin:0 auto 10px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight:700;
+      font-size:22px;
+    }
+    .e98{background:#f4b400}
+    .e95{background:#4caf50}
+    .dsl{background:#3fa9f5}
+    .fuel-name{
+      font-weight:700;
+      font-size:22px;
+      margin-bottom:2px;
+    }
+    .fuel-label{
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:8px;
+    }
+    .fuel-card input{
+      width:100%;
+      padding:12px 10px;
+      border-radius:12px;
+      border:2px solid #dbe6f2;
+      text-align:center;
+      font-size:28px;
+      font-weight:700;
+      color:var(--text);
+      background:#fff;
+    }
+    .fuel-meta{
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+      min-height:34px;
+    }
+    .footer-note{
+      text-align:center;
+      margin-top:14px;
+      color:#8c99ad;
+      font-size:13px;
+    }
+    .tag{
+      display:inline-block;
+      margin-top:6px;
+      padding:4px 8px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:700;
+    }
+    .tag.api{background:#eaf7ee;color:var(--success)}
+    .tag.manual{background:#eef4ff;color:#3b6fb6}
+    @media (max-width:680px){
+      .title-card{font-size:22px}
+      .fuel-grid{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
-<div class="app">
+  <div class="container">
+    <div class="title-card">⛽ CALCUL COÛT DU TRAJET</div>
 
-  <div class="title">⛽ CALCUL COÛT DU TRAJET</div>
+    <div class="main-card">
+      <h2>CHOISIS TON CARBURANT</h2>
 
-  <div class="card">
-    <h2>CHOISIS TON CARBURANT</h2>
+      <button id="locBtn" class="btn">📍 Prix de la station la plus proche</button>
 
-    <button class="btn-geo" id="btn-geo" onclick="fetchPrices()">
-      📍 Prix de la station la plus proche
-    </button>
-    <div class="geo-status" id="geo-status"></div>
-    <div class="station-info" id="station-info"></div>
+      <div id="status" class="status info"></div>
 
-    <div class="pumps">
-      <div class="pump-card" id="card-e98" onclick="selectFuel('e98')">
-        <div class="pump-icon pump-e98">⛽<br>E98</div>
-        <div class="pump-label">E98</div>
-        <div class="pump-price-wrap">
-          <label>Prix €/L</label>
-          <input type="number" id="price-e98" min="0" step="0.001" placeholder="1.799"
-                 onclick="event.stopPropagation()"
-                 oninput="savePrice('e98'); calculate()" />
+      <div id="locationLine" class="location-line">Aucune position encore récupérée.</div>
+
+      <div id="manualBox" class="manual-box">
+        <h3>Recherche manuelle si la géolocalisation échoue</h3>
+        <div class="manual-row">
+          <input id="manualCity" type="text" placeholder="Ex. Chevilly-Larue ou code postal" />
+          <button id="manualSearchBtn">Rechercher</button>
         </div>
       </div>
 
-      <div class="pump-card" id="card-e95" onclick="selectFuel('e95')">
-        <div class="pump-icon pump-e95">⛽<br>E95</div>
-        <div class="pump-label">E95</div>
-        <div class="pump-price-wrap">
-          <label>Prix €/L</label>
-          <input type="number" id="price-e95" min="0" step="0.001" placeholder="1.749"
-                 onclick="event.stopPropagation()"
-                 oninput="savePrice('e95'); calculate()" />
+      <div class="fuel-grid">
+        <div class="fuel-card" id="card-e98">
+          <div class="check">✓</div>
+          <div class="fuel-icon e98">⛽</div>
+          <div class="fuel-name">E98</div>
+          <div class="fuel-label">Prix €/L</div>
+          <input id="price-e98" type="number" step="0.001" value="1.99" />
+          <div class="fuel-meta" id="meta-e98">En attente de récupération</div>
+        </div>
+
+        <div class="fuel-card" id="card-e95">
+          <div class="check">✓</div>
+          <div class="fuel-icon e95">⛽</div>
+          <div class="fuel-name">E95</div>
+          <div class="fuel-label">Prix €/L</div>
+          <input id="price-e95" type="number" step="0.001" value="1.99" />
+          <div class="fuel-meta" id="meta-e95">En attente de récupération</div>
+        </div>
+
+        <div class="fuel-card selected" id="card-dsl">
+          <div class="check">✓</div>
+          <div class="fuel-icon dsl">⛽</div>
+          <div class="fuel-name">DSL</div>
+          <div class="fuel-label">Diesel</div>
+          <input id="price-dsl" type="number" step="0.001" value="1.99" />
+          <div class="fuel-meta" id="meta-dsl">En attente de récupération</div>
         </div>
       </div>
 
-      <div class="pump-card" id="card-dies" onclick="selectFuel('dies')">
-        <div class="pump-icon pump-dies">⛽<br>DSL</div>
-        <div class="pump-label">Diesel</div>
-        <div class="pump-price-wrap">
-          <label>Prix €/L</label>
-          <input type="number" id="price-dies" min="0" step="0.001" placeholder="1.699"
-                 onclick="event.stopPropagation()"
-                 oninput="savePrice('dies'); calculate()" />
-        </div>
-      </div>
-    </div>
-
-    <div class="last-update" id="last-update"></div>
-  </div>
-
-  <!-- TRAJET -->
-  <div class="card">
-    <h2>🗺️ TON TRAJET</h2>
-    <div class="road-visual">
-      <span>🚩</span>
-      <div class="road-line"><span class="car-emoji">🚗</span></div>
-      <span>🏁</span>
-    </div>
-    <div class="input-row">
-      <label>Distance</label>
-      <input type="number" id="distance" min="0" placeholder="" oninput="calculate()" />
-      <span>km</span>
-    </div>
-    <div class="input-row">
-      <label>Consommation</label>
-      <input type="number" id="conso" min="0" step="0.1" placeholder="" oninput="calculate()" />
-      <span>L/100 km</span>
+      <div id="updateNote" class="footer-note">Aucune mise à jour pour le moment.</div>
     </div>
   </div>
 
-  <div class="error-msg" id="error-msg"></div>
+  <script>
+    const statusBox = document.getElementById('status');
+    const locationLine = document.getElementById('locationLine');
+    const manualBox = document.getElementById('manualBox');
+    const manualCity = document.getElementById('manualCity');
+    const manualSearchBtn = document.getElementById('manualSearchBtn');
+    const locBtn = document.getElementById('locBtn');
+    const updateNote = document.getElementById('updateNote');
 
-  <div class="result-card">
-    <h2>💰 COÛT DU TRAJET</h2>
-    <div class="result-value empty" id="result-value">-- €</div>
-    <div class="result-detail" id="result-detail"></div>
-  </div>
+    const fuels = {
+      e98: { input: document.getElementById('price-e98'), meta: document.getElementById('meta-e98') },
+      e95: { input: document.getElementById('price-e95'), meta: document.getElementById('meta-e95') },
+      dsl: { input: document.getElementById('price-dsl'), meta: document.getElementById('meta-dsl') }
+    };
 
-</div>
-
-<script>
-  let selectedFuel = 'dies';
-  const API_URL = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-des-carburants-en-france-flux-instantane-v2/records";
-
-  window.addEventListener('DOMContentLoaded', () => {
-    ['e98','e95','dies'].forEach(f => {
-      const saved = localStorage.getItem('price_' + f);
-      if (saved) document.getElementById('price-' + f).value = saved;
-    });
-    const savedFuel = localStorage.getItem('selected_fuel') || 'dies';
-    selectedFuel = savedFuel;
-    document.getElementById('card-' + selectedFuel).classList.add('selected');
-    const lastUpdate = localStorage.getItem('prices_last_update');
-    if (lastUpdate) document.getElementById('last-update').textContent = '🕐 Prix mis à jour le ' + lastUpdate;
-    calculate();
-  });
-
-  function selectFuel(fuel) {
-    document.querySelectorAll('.pump-card').forEach(c => c.classList.remove('selected'));
-    document.getElementById('card-' + fuel).classList.add('selected');
-    selectedFuel = fuel;
-    localStorage.setItem('selected_fuel', fuel);
-    calculate();
-  }
-
-  function savePrice(fuel) {
-    const val = document.getElementById('price-' + fuel).value;
-    localStorage.setItem('price_' + fuel, val);
-    document.getElementById('price-' + fuel).classList.remove('auto-filled');
-  }
-
-  async function fetchPrices() {
-    const btn    = document.getElementById('btn-geo');
-    const status = document.getElementById('geo-status');
-    const info   = document.getElementById('station-info');
-
-    if (!navigator.geolocation) {
-      status.textContent = '❌ Géolocalisation non supportée sur cet appareil.';
-      status.className = 'geo-status error';
-      return;
+    function showStatus(message, type = 'info') {
+      statusBox.className = 'status show ' + type;
+      statusBox.textContent = message;
     }
 
-    btn.disabled = true;
-    status.textContent = '📡 Localisation en cours...';
-    status.className = 'geo-status loading';
-    info.classList.remove('visible');
+    function hideStatus() {
+      statusBox.className = 'status';
+      statusBox.textContent = '';
+    }
 
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        status.textContent = '🔄 Recherche de la station la plus proche...';
+    function nowLabel() {
+      const d = new Date();
+      return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
 
-        try {
-          // Trier par distance (proche en premier), pas par prix
-          const query = `distance(geom,geom'POINT(${lon} ${lat})',10km)`;
-          const url   = `${API_URL}?where=${encodeURIComponent(query)}&limit=20&order_by=dist(geom,geom'POINT(${lon} ${lat})') ASC`;
-          const resp  = await fetch(url);
-          const data  = await resp.json();
+    function formatDistance(meters) {
+      if (meters == null || isNaN(meters)) return 'distance inconnue';
+      if (meters < 1000) return `${Math.round(meters)} m`;
+      return `${(meters / 1000).toFixed(1).replace('.', ',')} km`;
+    }
 
-          if (!data.results || data.results.length === 0) {
-            status.textContent = '⚠️ Aucune station trouvée dans un rayon de 10 km.';
-            status.className = 'geo-status error';
-            btn.disabled = false;
-            return;
-          }
+    function setFuelValue(key, price, infoText, source = 'api') {
+      if (price !== null && price !== undefined && !isNaN(price)) {
+        fuels[key].input.value = Number(price).toFixed(3);
+        fuels[key].meta.innerHTML = `${infoText}<br><span class="tag ${source}">${source === 'api' ? 'API' : 'MANUEL'}</span>`;
+      } else {
+        fuels[key].meta.innerHTML = `${infoText}<br><span class="tag ${source}">${source === 'api' ? 'API' : 'MANUEL'}</span>`;
+      }
+    }
 
-          // Prendre la station la plus proche qui a AU MOINS un prix disponible
-          const nearest = data.results[0];
+    function clearUnavailableFuel(key, message) {
+      fuels[key].input.value = '';
+      fuels[key].meta.innerHTML = `${message}<br><span class="tag api">API</span>`;
+    }
 
-          const map = { 'e98': 'sp98_prix', 'e95': 'sp95_prix', 'dies': 'gazole_prix' };
-          let filled = 0;
+    function resetMetaWaiting() {
+      Object.values(fuels).forEach(f => {
+        f.meta.textContent = 'Recherche en cours...';
+      });
+    }
 
-          for (const [fuel, field] of Object.entries(map)) {
-            const input = document.getElementById('price-' + fuel);
-            if (nearest[field] && parseFloat(nearest[field]) > 0) {
-              input.value = parseFloat(nearest[field]).toFixed(3);
-              input.classList.add('auto-filled');
-              localStorage.setItem('price_' + fuel, input.value);
-              filled++;
-            } else {
-              // Prix non disponible dans cette station : vider le champ
-              input.value = '';
-              input.classList.remove('auto-filled');
-              localStorage.removeItem('price_' + fuel);
-            }
-          }
+    function geolocationErrorMessage(error) {
+      if (!error) return 'Localisation indisponible.';
+      switch (error.code) {
+        case 1:
+          return 'Localisation refusée par le navigateur.';
+        case 2:
+          return 'Position indisponible actuellement.';
+        case 3:
+          return 'Temps d’attente dépassé pour la localisation.';
+        default:
+          return 'Impossible de récupérer la localisation.';
+      }
+    }
 
-          // Afficher les infos de la station
-          const nom     = nearest.nom || 'Station';
-          const adresse = nearest.adresse || '';
-          const ville   = nearest.ville || '';
+    async function reverseGeocode(lat, lon) {
+      try {
+        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&accept-language=fr`;
+        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        const data = await res.json();
+        return data.display_name || `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+      } catch {
+        return `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+      }
+    }
 
-          // Calculer distance approximative en m ou km
-          const distM = nearest.dist ? Math.round(nearest.dist) : null;
-          const distStr = distM !== null
-            ? (distM < 1000 ? distM + ' m' : (distM/1000).toFixed(1) + ' km')
-            : '';
+    async function geocodeCity(query) {
+      const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=fr&accept-language=fr&q=${encodeURIComponent(query)}`;
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      const data = await res.json();
+      if (!data || !data.length) throw new Error('Lieu introuvable');
+      return {
+        lat: parseFloat(data[0].lat),
+        lon: parseFloat(data[0].lon),
+        label: data[0].display_name
+      };
+    }
 
-          info.innerHTML =
-            '<strong>📍 ' + nom + '</strong><br>' +
-            adresse + (ville ? ', ' + ville : '') +
-            (distStr ? ' — <strong>' + distStr + '</strong>' : '');
-          info.classList.add('visible');
+    async function fetchNearestStationPrices(lat, lon, labelSource = '') {
+      resetMetaWaiting();
+      showStatus('Recherche de la station la plus proche...', 'info');
+      locationLine.textContent = `Position utilisée : ${labelSource || `${lat.toFixed(5)}, ${lon.toFixed(5)}`}`;
 
-          const now = new Date().toLocaleDateString('fr-FR', {
-            day:'2-digit', month:'2-digit', year:'numeric',
-            hour:'2-digit', minute:'2-digit'
-          });
-          localStorage.setItem('prices_last_update', now);
-          document.getElementById('last-update').textContent = '🕐 Prix mis à jour le ' + now;
+      try {
+        const apiUrl = `https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/prix-des-carburants-en-france-flux-instantane-v2/records?limit=1&where=services_service%20is%20not%20null&order_by=dist(geom%2C%20geom'POINT(${lon}%20${lat})')%20ASC&select=id,adresse,ville,cp,geom,prix,services_service`;
 
-          const msgNonDispo = filled < 3 ? ' (' + (3 - filled) + ' carburant(s) non disponible(s) dans cette station)' : '';
-          status.textContent = '✅ ' + filled + ' prix récupérés — station la plus proche' + msgNonDispo;
-          status.className = 'geo-status success';
-          calculate();
+        const response = await fetch(apiUrl);
+        const data = await response.json();
 
-        } catch (e) {
-          status.textContent = '❌ Erreur réseau. Vérifiez votre connexion.';
-          status.className = 'geo-status error';
+        if (!data.results || !data.results.length) {
+          showStatus('Aucune station trouvée à proximité avec les critères actuels.', 'warning');
+          updateNote.textContent = `Dernière tentative : ${nowLabel()}`;
+          return;
         }
-        btn.disabled = false;
-      },
-      () => {
-        status.textContent = '❌ Localisation refusée ou indisponible.';
-        status.className = 'geo-status error';
-        btn.disabled = false;
-      },
-      { timeout: 10000, enableHighAccuracy: false }
-    );
-  }
 
-  function calculate() {
-    const errEl = document.getElementById('error-msg');
-    const resEl = document.getElementById('result-value');
-    const detEl = document.getElementById('result-detail');
+        const station = data.results[0];
 
-    const price = parseFloat(document.getElementById('price-' + selectedFuel).value);
-    const dist  = parseFloat(document.getElementById('distance').value);
-    const conso = parseFloat(document.getElementById('conso').value);
+        const stationLat = station?.geom?.lat ?? null;
+        const stationLon = station?.geom?.lon ?? null;
+        let distance = null;
 
-    errEl.textContent = '';
+        if (stationLat && stationLon) {
+          const R = 6371000;
+          const dLat = (stationLat - lat) * Math.PI / 180;
+          const dLon = (stationLon - lon) * Math.PI / 180;
+          const a =
+            Math.sin(dLat / 2) ** 2 +
+            Math.cos(lat * Math.PI / 180) *
+            Math.cos(stationLat * Math.PI / 180) *
+            Math.sin(dLon / 2) ** 2;
+          distance = 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
 
-    if (isNaN(price) || isNaN(dist) || isNaN(conso)) {
-      resEl.textContent = '-- €';
-      resEl.className   = 'result-value empty';
-      detEl.textContent = '';
-      return;
+        const stationLabel = [station.adresse, station.ville, station.cp].filter(Boolean).join(', ');
+        locationLine.textContent = `Station retenue : ${stationLabel || 'station inconnue'} — ${formatDistance(distance)}`;
+
+        let prixMap = {};
+        if (Array.isArray(station.prix)) {
+          station.prix.forEach(p => {
+            const nom = (p.nom || '').toLowerCase();
+            const valeur = p.valeur ?? p.prix ?? null;
+            if (nom.includes('gazole') || nom.includes('diesel') || nom === 'dsl') prixMap.dsl = valeur;
+            if (nom.includes('sp95') || nom === 'e95') prixMap.e95 = valeur;
+            if (nom.includes('sp98') || nom === 'e98') prixMap.e98 = valeur;
+          });
+        }
+
+        if (prixMap.e98 != null) {
+          setFuelValue('e98', prixMap.e98, `Station la plus proche • ${formatDistance(distance)}`, 'api');
+        } else {
+          clearUnavailableFuel('e98', 'E98 indisponible dans cette station');
+        }
+
+        if (prixMap.e95 != null) {
+          setFuelValue('e95', prixMap.e95, `Station la plus proche • ${formatDistance(distance)}`, 'api');
+        } else {
+          clearUnavailableFuel('e95', 'E95 indisponible dans cette station');
+        }
+
+        if (prixMap.dsl != null) {
+          setFuelValue('dsl', prixMap.dsl, `Station la plus proche • ${formatDistance(distance)}`, 'api');
+        } else {
+          clearUnavailableFuel('dsl', 'Diesel indisponible dans cette station');
+        }
+
+        showStatus('Prix récupérés sur la station la plus proche.', 'success');
+        updateNote.textContent = `Prix mis à jour le ${nowLabel()}`;
+      } catch (err) {
+        console.error(err);
+        showStatus('Erreur lors de la récupération des prix de la station la plus proche.', 'error');
+        updateNote.textContent = `Dernière tentative : ${nowLabel()}`;
+      }
     }
-    if (price <= 0 || dist <= 0 || conso <= 0) {
-      errEl.textContent = '⚠️ Les valeurs doivent être supérieures à 0.';
-      resEl.textContent = '-- €';
-      resEl.className   = 'result-value empty';
-      detEl.textContent = '';
-      return;
+
+    async function locateAndFetch() {
+      hideStatus();
+      manualBox.classList.remove('show');
+
+      if (!navigator.geolocation) {
+        showStatus('Votre navigateur ne prend pas en charge la géolocalisation.', 'error');
+        manualBox.classList.add('show');
+        return;
+      }
+
+      locBtn.disabled = true;
+      locBtn.textContent = 'Localisation en cours...';
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          const label = await reverseGeocode(latitude, longitude);
+          await fetchNearestStationPrices(latitude, longitude, label);
+          locBtn.disabled = false;
+          locBtn.textContent = '📍 Prix de la station la plus proche';
+        },
+        (error) => {
+          const msg = geolocationErrorMessage(error);
+          showStatus(msg + ' Utilise la recherche manuelle ci-dessous.', 'warning');
+          locationLine.textContent = 'Aucune position GPS disponible.';
+          manualBox.classList.add('show');
+          locBtn.disabled = false;
+          locBtn.textContent = '📍 Prix de la station la plus proche';
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 0
+        }
+      );
     }
 
-    const litres = (dist * conso) / 100;
-    const cost   = litres * price;
-    const fuelNames = { e98: 'E98', e95: 'E95', dies: 'Diesel' };
+    async function manualSearch() {
+      const query = manualCity.value.trim();
+      if (!query) {
+        showStatus('Saisis une ville ou un code postal.', 'warning');
+        return;
+      }
 
-    resEl.textContent = cost.toFixed(2).replace('.', ',') + ' €';
-    resEl.className   = 'result-value';
-    detEl.textContent =
-      dist + ' km × ' + conso + ' L/100km = ' +
-      litres.toFixed(2) + ' L × ' + price.toFixed(3) + ' €/L (' + fuelNames[selectedFuel] + ')';
-  }
-</script>
+      manualSearchBtn.disabled = true;
+      manualSearchBtn.textContent = 'Recherche...';
+
+      try {
+        showStatus('Recherche du lieu saisi...', 'info');
+        const place = await geocodeCity(query);
+        await fetchNearestStationPrices(place.lat, place.lon, place.label);
+        showStatus('Recherche manuelle effectuée avec succès.', 'success');
+      } catch (e) {
+        showStatus('Lieu introuvable. Vérifie la saisie.', 'error');
+      } finally {
+        manualSearchBtn.disabled = false;
+        manualSearchBtn.textContent = 'Rechercher';
+      }
+    }
+
+    locBtn.addEventListener('click', locateAndFetch);
+    manualSearchBtn.addEventListener('click', manualSearch);
+
+    document.querySelectorAll('.fuel-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.fuel-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+      });
+    });
+  </script>
 </body>
 </html>
