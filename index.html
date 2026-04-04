@@ -16,7 +16,13 @@
       padding: 20px 14px 40px;
     }
 
-    .app { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 16px; }
+    .app {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
     .title {
       text-align: center;
@@ -60,43 +66,44 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       box-shadow: 0 3px 10px rgba(230,74,25,.3);
       transition: opacity .2s;
       -webkit-tap-highlight-color: transparent;
     }
     .btn-geo:hover { opacity: .9; }
-    .btn-geo:disabled { background: #ccc; box-shadow: none; cursor: default; opacity: 1; }
+    .btn-geo:disabled { background: #ccc; box-shadow: none; cursor: default; }
 
     .geo-status {
       font-size: .68rem;
       text-align: center;
       min-height: 16px;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       font-weight: 600;
     }
     .geo-status.loading { color: #ff7043; }
     .geo-status.success { color: #4caf50; }
     .geo-status.error   { color: #e53935; }
 
-    /* INFOS STATION */
+    /* STATION AFFICHÉE */
     .station-info {
       font-size: .68rem;
-      color: #555;
+      color: #666;
       text-align: center;
-      background: #f0fff4;
-      border: 1px solid #c8e6c9;
+      background: #f5faff;
       border-radius: 10px;
-      padding: 7px 10px;
+      padding: 6px 10px;
       margin-bottom: 10px;
       display: none;
-      line-height: 1.5;
     }
     .station-info.visible { display: block; }
-    .station-info strong { color: #2e7d32; }
 
     /* POMPES */
-    .pumps { display: flex; gap: 8px; justify-content: center; }
+    .pumps {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
 
     .pump-card {
       flex: 1;
@@ -165,20 +172,18 @@
       color: #3a5a8c;
       outline: none;
       background: #fff;
-      transition: border-color .2s, background .2s;
+      transition: border-color .2s;
     }
     .pump-price-wrap input:focus { border-color: #3a9bdc; }
+    /* Indicateur de mise à jour auto */
     .pump-price-wrap input.auto-filled { border-color: #4caf50; background: #f0fff4; }
-    /* Badge "non dispo" */
-    .pump-price-wrap .unavailable {
-      font-size: .58rem;
-      color: #bbb;
-      font-style: italic;
-    }
 
     /* TRAJET */
     .road-visual {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
     }
     .road-line {
       flex: 1; height: 6px;
@@ -188,7 +193,12 @@
     }
     .car-emoji { position: absolute; top: -10px; left: 40%; font-size: 1.1rem; }
 
-    .input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
     .input-row label { font-size: .78rem; font-weight: 600; color: #555; min-width: 100px; }
     .input-row input {
       flex: 1;
@@ -229,7 +239,9 @@
     .result-detail { margin-top: 8px; font-size: .7rem; color: #888; line-height: 1.5; }
 
     .error-msg { color: #e53935; font-size: .78rem; font-weight: 600; text-align: center; min-height: 16px; }
-    .last-update { font-size: .62rem; color: #aaa; text-align: center; margin-top: 8px; }
+
+    /* DERNIÈRE MAJ PRIX */
+    .last-update { font-size: .62rem; color: #aaa; text-align: center; margin-top: -8px; }
   </style>
 </head>
 <body>
@@ -237,11 +249,13 @@
 
   <div class="title">⛽ CALCUL COÛT DU TRAJET</div>
 
+  <!-- POMPES -->
   <div class="card">
     <h2>CHOISIS TON CARBURANT</h2>
 
+    <!-- Bouton géolocalisation -->
     <button class="btn-geo" id="btn-geo" onclick="fetchPrices()">
-      📍 Prix de la station la plus proche
+      📍 Récupérer les prix près de moi
     </button>
     <div class="geo-status" id="geo-status"></div>
     <div class="station-info" id="station-info"></div>
@@ -306,6 +320,7 @@
 
   <div class="error-msg" id="error-msg"></div>
 
+  <!-- RÉSULTAT -->
   <div class="result-card">
     <h2>💰 COÛT DU TRAJET</h2>
     <div class="result-value empty" id="result-value">-- €</div>
@@ -316,6 +331,7 @@
 
 <script>
   let selectedFuel = 'dies';
+
   const API_URL = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-des-carburants-en-france-flux-instantane-v2/records";
 
   window.addEventListener('DOMContentLoaded', () => {
@@ -326,8 +342,11 @@
     const savedFuel = localStorage.getItem('selected_fuel') || 'dies';
     selectedFuel = savedFuel;
     document.getElementById('card-' + selectedFuel).classList.add('selected');
+
     const lastUpdate = localStorage.getItem('prices_last_update');
-    if (lastUpdate) document.getElementById('last-update').textContent = '🕐 Prix mis à jour le ' + lastUpdate;
+    if (lastUpdate) {
+      document.getElementById('last-update').textContent = '🕐 Prix mis à jour le ' + lastUpdate;
+    }
     calculate();
   });
 
@@ -342,10 +361,12 @@
   function savePrice(fuel) {
     const val = document.getElementById('price-' + fuel).value;
     localStorage.setItem('price_' + fuel, val);
+    // Retirer l'indicateur vert si l'utilisateur modifie manuellement
     document.getElementById('price-' + fuel).classList.remove('auto-filled');
   }
 
-  async function fetchPrices() {
+  // ── RÉCUPÉRATION DES PRIX VIA API GOUVERNEMENT ──
+  function fetchPrices() {
     const btn    = document.getElementById('btn-geo');
     const status = document.getElementById('geo-status');
     const info   = document.getElementById('station-info');
@@ -365,79 +386,69 @@
       async (pos) => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
-        status.textContent = '🔄 Recherche de la station la plus proche...';
+
+        status.textContent = '🔄 Recherche des stations autour de vous...';
 
         try {
-          // Trier par distance (proche en premier), pas par prix
-          const query = `distance(geom,geom'POINT(${lon} ${lat})',10km)`;
-          const url   = `${API_URL}?where=${encodeURIComponent(query)}&limit=20&order_by=dist(geom,geom'POINT(${lon} ${lat})') ASC`;
+          // Recherche des 10 stations les plus proches dans un rayon de 15 km
+          const query = `distance(geom,geom'POINT(${lon} ${lat})',15km)`;
+          const url   = `${API_URL}?where=${encodeURIComponent(query)}&limit=10&order_by=gazole_prix ASC`;
           const resp  = await fetch(url);
           const data  = await resp.json();
 
           if (!data.results || data.results.length === 0) {
-            status.textContent = '⚠️ Aucune station trouvée dans un rayon de 10 km.';
+            status.textContent = '⚠️ Aucune station trouvée dans un rayon de 15 km.';
             status.className = 'geo-status error';
             btn.disabled = false;
             return;
           }
 
-          // Prendre la station la plus proche qui a AU MOINS un prix disponible
-          const nearest = data.results[0];
+          // Chercher la station avec le max de carburants disponibles
+          let best = null;
+          for (const s of data.results) {
+            if (s.sp98_prix && s.sp95_prix && s.gazole_prix) { best = s; break; }
+          }
+          if (!best) best = data.results[0];
 
+          // Remplir les champs
           const map = { 'e98': 'sp98_prix', 'e95': 'sp95_prix', 'dies': 'gazole_prix' };
           let filled = 0;
-
           for (const [fuel, field] of Object.entries(map)) {
-            const input = document.getElementById('price-' + fuel);
-            if (nearest[field] && parseFloat(nearest[field]) > 0) {
-              input.value = parseFloat(nearest[field]).toFixed(3);
+            if (best[field]) {
+              const input = document.getElementById('price-' + fuel);
+              input.value = parseFloat(best[field]).toFixed(3);
               input.classList.add('auto-filled');
               localStorage.setItem('price_' + fuel, input.value);
               filled++;
-            } else {
-              // Prix non disponible dans cette station : vider le champ
-              input.value = '';
-              input.classList.remove('auto-filled');
-              localStorage.removeItem('price_' + fuel);
             }
           }
 
-          // Afficher les infos de la station
-          const nom     = nearest.nom || 'Station';
-          const adresse = nearest.adresse || '';
-          const ville   = nearest.ville || '';
-
-          // Calculer distance approximative en m ou km
-          const distM = nearest.dist ? Math.round(nearest.dist) : null;
-          const distStr = distM !== null
-            ? (distM < 1000 ? distM + ' m' : (distM/1000).toFixed(1) + ' km')
-            : '';
-
-          info.innerHTML =
-            '<strong>📍 ' + nom + '</strong><br>' +
-            adresse + (ville ? ', ' + ville : '') +
-            (distStr ? ' — <strong>' + distStr + '</strong>' : '');
+          // Afficher le nom de la station
+          const nom     = best.nom || 'Station inconnue';
+          const ville   = best.ville || '';
+          const adresse = best.adresse || '';
+          info.textContent = '📍 ' + nom + ' — ' + adresse + ', ' + ville;
           info.classList.add('visible');
 
+          // Sauvegarder la date de mise à jour
           const now = new Date().toLocaleDateString('fr-FR', {
-            day:'2-digit', month:'2-digit', year:'numeric',
-            hour:'2-digit', minute:'2-digit'
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
           });
           localStorage.setItem('prices_last_update', now);
           document.getElementById('last-update').textContent = '🕐 Prix mis à jour le ' + now;
 
-          const msgNonDispo = filled < 3 ? ' (' + (3 - filled) + ' carburant(s) non disponible(s) dans cette station)' : '';
-          status.textContent = '✅ ' + filled + ' prix récupérés — station la plus proche' + msgNonDispo;
+          status.textContent = '✅ ' + filled + ' prix récupérés automatiquement !';
           status.className = 'geo-status success';
           calculate();
 
         } catch (e) {
-          status.textContent = '❌ Erreur réseau. Vérifiez votre connexion.';
+          status.textContent = '❌ Erreur lors de la récupération des prix. Vérifiez votre connexion.';
           status.className = 'geo-status error';
         }
         btn.disabled = false;
       },
-      () => {
+      (err) => {
         status.textContent = '❌ Localisation refusée ou indisponible.';
         status.className = 'geo-status error';
         btn.disabled = false;
